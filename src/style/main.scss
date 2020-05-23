@@ -1,0 +1,94 @@
+@import url('https://fonts.googleapis.com/css2?family=Muli:wght@200;500;900&display=swap');
+
+body{
+    font-family: 'Muli', sans-serif;
+    background: #2a2d34;
+    color: #f7f0f0;
+}
+.quote{
+    font-weight: 200;
+}
+hr{
+    border-color: #f7f0f0;
+}
+.header{
+    margin-top: 3vh;
+    margin-bottom: 4vh;
+    .big-title{
+        font-size: 2em;
+        font-weight: 900 !important;
+    }
+}
+
+.controller{
+    bottom: 0;
+}
+
+.btn-primary{
+    background-color: #8af3ff;
+    border-color: #8af3ff;
+    color: #2a2d34;
+}
+
+.navbar-toggler-icon{
+    // color: #f7f0f0;
+}
+
+.code{
+    color: #ffc107;
+    font-size: 1.3em;
+}
+.list-group{
+    .list-group-item{
+        border-color: rgba($color: #f7f0f0, $alpha: 0.5);
+        background-color: unset;
+        border-left: none;
+        border-right: none;
+        p{
+            margin-bottom: 0;
+            padding-right: 1em;
+        }
+        .badge-rad{
+            background: #23ce6b;
+            color: #2a2d34;
+        }
+        .btn-group{
+            display: flex;
+            align-items: center;
+            margin: auto;
+            width: 3em;
+            .badge-pill{
+                height: 1.5em;
+            }
+        }
+    }
+}
+.fixed-bottom{
+    padding-top: 1em;
+    padding-bottom: 1em;
+    background: #2a2d34;
+    display: block;
+}
+
+
+.h-active{
+    color: #ed6a5a;
+}
+
+.arrow{
+    margin-top: 2em;
+}
+a{
+    text-decoration: none;
+    color: #f7f0f0;
+}
+@media only screen and (max-width: 600px) {
+    #question_zone{
+        height: 50vh;
+        overflow: scroll;
+    }
+}   
+#question_zone{
+    height: 60vh;
+    overflow: scroll;
+} 

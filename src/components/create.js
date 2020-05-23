@@ -1,32 +1,21 @@
 import React from 'react'
 import { withRouter } from 'react-router-dom';
+import firebase from "firebase";
 
 class MainApp extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            total_question: 3,
-            event_name: "",
-            code: "asd123",
+            total_question: 0,
+            eventName: "",
+            code: "",
             question: '',
             questions_list: [
-                {
-                    'id': 1,
-                    'question': 'Do you ever think about buy a new car?',
-                    'loves': 2
-                },
-                {
-                    'id': 2,
-                    'question': 'How did you handle your feeling?',
-                    'loves': 10
-                },
-                {
-                    'id': 3,
-                    'question': 'How did you handle your feeling?',
-                    'loves': 10
-                }
-            ]
+            ],
+            id: ""
         }
+        this.addQuestion = this.addQuestion.bind(this)
+        this.doLove = this.doLove.bind(this)
     }
 
     onChange = (e) => {
@@ -37,11 +26,30 @@ class MainApp extends React.Component {
         });
     };
 
+    async getAll(code) {
+        const db = firebase.firestore();
+        let data = await db.collection("events")
+            .where("secret_code", "==", code).get()
+
+        data.docs.map((inform) => {
+            this.setState({
+                total_question: inform.data().total_question,
+                eventName: inform.data().eventName,
+                questions_list: inform.data().questions_list,
+                id: inform.id
+            })
+        })
+    }
+
     componentDidMount() {
         try {
+            console.log(this.props.location.state.code);
+            
             this.setState({
-                event_name: this.props.location.state.eventName
+                eventName: this.props.location.state.eventName,
+                code: this.props.location.state.code
             })
+            this.getAll(this.props.location.state.code)
         } catch{
 
         }
@@ -50,12 +58,36 @@ class MainApp extends React.Component {
 
     }
 
-    doLove = (e) => {
+    async update() {
+        const {id, total_question, eventName, questions_list} = this.state
+        console.log('==================');
+        console.log(total_question);
+        
+        const db = firebase.firestore();
+        let data = await db.collection("events").doc(id).update({
+            total_question : total_question,
+            eventName: eventName,
+            questions_list: questions_list
+        })
+    }
+
+    compare( a, b ) {
+        if ( a.loves < b.loves ){
+          return 1;
+        }
+        if ( a.loves > b.loves ){
+          return -1;
+        }
+        return 0;
+      }
+
+    async doLove(e){
+        const {id} = this.state
         let base_question_list = this.state.questions_list
-        const id = e.target.attributes.getNamedItem('que_id').value
+        const ids = e.target.attributes.getNamedItem('que_id').value
         let is_clicked = e.target.attributes.getNamedItem('is_clicked').value
-        let target_q = base_question_list.find(x => x.id == id)
-        let index = base_question_list.findIndex(x => x.id == id)
+        let target_q = base_question_list.find(x => x.id == ids)
+        let index = base_question_list.findIndex(x => x.id == ids)
 
 
         if (is_clicked == 'false') {
@@ -69,25 +101,46 @@ class MainApp extends React.Component {
             target_q.loves--;
         }
         base_question_list[index] = target_q
+        base_question_list.sort(this.compare)
+
+        const db = firebase.firestore();
+        let data = await db.collection("events").doc(id).update({
+            questions_list: base_question_list
+        })
 
         this.setState({
             questions_list: base_question_list
         })
 
     }
-    addQuestion = (e) => {
-        const { question, questions_list, total_question } = this.state
-
-        let qst = this.state.questions_list
+    async addQuestion(){
+        const { question, questions_list, total_question, id } = this.state
+        const db = firebase.firestore();
+        console.log(total_question);
+        
+        console.log("before");
+        
+        let counter = total_question + 1
+        console.log(counter, "----");
+        
+        if (question == '') {
+            return null
+        }
+        let qst = questions_list
         qst.push({
-            'id': total_question + 1,
+            'id': counter,
             'question': this.state.question,
             'loves': 0
         })
         this.setState({
-            total_question: total_question + 1,
+            total_question: counter,
             questions_list: qst
         })
+        let data = await db.collection("events").doc(id).update({
+            total_question : counter,
+            questions_list: questions_list
+        })
+        
     }
 
     render() {
@@ -98,7 +151,7 @@ class MainApp extends React.Component {
                         <a href="/"><i class="fa fa-chevron-left text-left" aria-hidden="true" /></a>
                     </div>
                     <div class="container text-left header">
-                        <h1>Welcome to<br /><span className="big-title"> {this.state.event_name} </span></h1>
+                        <h1>Welcome to<br /><span className="big-title"> {this.state.eventName} </span></h1>
                         <p className="code">Event Code : {this.state.code}</p>
                     </div>
 

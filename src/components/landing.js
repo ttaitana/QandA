@@ -10,6 +10,7 @@ class Landing extends React.Component {
             eventName: "",
             code: ''
         }
+        this.handleJoin = this.handleJoin.bind(this)
     }
 
     onChange = (e) => {
@@ -42,12 +43,21 @@ class Landing extends React.Component {
             })
     }
 
-    handleJoin = (e) => {
+    async handleJoin(e){
+        let code = this.state.code.toLowerCase()
         e.preventDefault();
-        this.props.history.push('/event', this.state);
+        const db = firebase.firestore();
+        let data = await db.collection("events")
+            .where("secret_code", "==", code).get()
+            console.log(data);
+        if(data.size == 0){
+            alert("Incorrect room code")
+        }else{
+            this.props.history.push('/event', this.state);
+        }
     } 
 
-    render() {
+    render() {  
         return (
             <>
                 <div class="vertical-center ">

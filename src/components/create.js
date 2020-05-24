@@ -43,8 +43,8 @@ class MainApp extends React.Component {
 
     componentDidMount() {
         try {
-            console.log(this.props.location.state.code);
-            
+            // console.log(this.props.location.state.code);
+
             this.setState({
                 eventName: this.props.location.state.eventName,
                 code: this.props.location.state.code
@@ -54,42 +54,40 @@ class MainApp extends React.Component {
 
         }
     }
-    componentDidUpdate() {
-
-    }
 
     async update() {
-        const {id, total_question, eventName, questions_list} = this.state
+        const { id, total_question, eventName, questions_list } = this.state
         console.log('==================');
         console.log(total_question);
-        
+
         const db = firebase.firestore();
         let data = await db.collection("events").doc(id).update({
-            total_question : total_question,
+            total_question: total_question,
             eventName: eventName,
             questions_list: questions_list
         })
+        this.getAll(this.props.location.state.code)
     }
 
-    compare( a, b ) {
-        if ( a.loves < b.loves ){
-          return 1;
+    compare(a, b) {
+        if (a.loves < b.loves) {
+            return 1;
         }
-        if ( a.loves > b.loves ){
-          return -1;
+        if (a.loves > b.loves) {
+            return -1;
         }
         return 0;
-      }
+    }
 
-    async doLove(e){
-        const {id} = this.state
-        let base_question_list = this.state.questions_list       
+    async doLove(e) {
+        const { id } = this.state
+        let base_question_list = this.state.questions_list
         const ids = e.target.attributes.getNamedItem('id').value
         let is_clicked = e.target.attributes.getNamedItem('is_clicked').value
         let target_q = base_question_list.find(x => x.id == ids.slice(5))
         let index = base_question_list.findIndex(x => x.id == ids.slice(5))
         console.log(target_q);
-        
+
 
         if (is_clicked == 'false') {
             target_q.loves++;
@@ -107,7 +105,7 @@ class MainApp extends React.Component {
         this.setState({
             questions_list: base_question_list
         })
-        
+
         let target_heart = document.querySelector(`#${ids}`)
         if (is_clicked == 'false') {
             target_heart.className = 'fa fa-heart h-active'
@@ -117,18 +115,18 @@ class MainApp extends React.Component {
             target_heart.className = 'fa fa-heart-o'
             target_heart.attributes.getNamedItem('is_clicked').value = "false"
         }
-
+        this.getAll(this.props.location.state.code)
     }
-    async addQuestion(){
+    async addQuestion() {
         const { question, questions_list, total_question, id } = this.state
         const db = firebase.firestore();
         console.log(total_question);
-        
+
         console.log("before");
-        
+
         let counter = total_question + 1
         console.log(counter, "----");
-        
+
         if (question == '') {
             return null
         }
@@ -143,10 +141,10 @@ class MainApp extends React.Component {
             questions_list: qst
         })
         let data = await db.collection("events").doc(id).update({
-            total_question : counter,
+            total_question: counter,
             questions_list: questions_list
         })
-        
+
     }
 
     render() {
@@ -156,31 +154,32 @@ class MainApp extends React.Component {
                     <div class="container text-left arrow" onClick="">
                         <a href="/"><i class="fa fa-chevron-left text-left" aria-hidden="true" /></a>
                     </div>
-                    <div class="container text-left header">
-                        <h1>Welcome to<br /><span className="big-title"> {this.state.eventName} </span></h1>
-                        <p className="code">Event Code : {this.state.code}</p>
-                    </div>
+                    <div id="question_zone">
+                        <div class="container text-left header">
+                            <h1>Welcome to<br /><span className="big-title"> {this.state.eventName} </span></h1>
+                            <p className="code">Event Code : {this.state.code}</p>
+                        </div>
 
-                    {/* Questions zone */}
-                    <div className="container text-left" id="question_zone">
-                        <p>All Questions {this.state.total_question}</p>
-                        <ul class="list-group">
-                            {this.state.questions_list.map((qes) => (
-                                <li class="list-group-item d-flex justify-content-between align-items-center row">
-                                    <p className="col">
-                                        {qes.question}
-                                    </p>
-                                    <div className='btn-group'>
-                                        <span class="badge badge-warning badge-pill">{qes.loves}</span>
+                        {/* Questions zone */}
+                        <div className="container text-left">
+                            <p>All Questions {this.state.total_question}</p>
+                            <ul class="list-group">
+                                {this.state.questions_list.map((qes) => (
+                                    <li class="list-group-item d-flex justify-content-between align-items-center row">
+                                        <p className="col">
+                                            {qes.question}
+                                        </p>
+                                        <div className='btn-group'>
+                                            <span class="badge badge-warning badge-pill">{qes.loves}</span>
                                     &ensp; &ensp;
-                                    <i class="fa fa-heart-o" que_id={qes.id} id={"heart"+qes.id} is_clicked="false" onClick={e => this.doLove(e)} />
-                                    </div>
+                                    <i class="fa fa-heart-o" que_id={qes.id} id={"heart" + qes.id} is_clicked="false" onClick={e => this.doLove(e)} />
+                                        </div>
 
-                                </li>
-                            ))}
-                        </ul>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
                     </div>
-
                     <div className="container text-left fixed-bottom">
                         <div class="form-group">
                             <input type="text" class="form-control" name="question" id="question" placeholder="Do you have any question?" onChange={this.onChange} />

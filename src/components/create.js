@@ -28,17 +28,17 @@ class MainApp extends React.Component {
 
     async getAll(code) {
         const db = firebase.firestore();
-        let data = await db.collection("events")
-            .where("secret_code", "==", code).get()
-
-        data.docs.map((inform) => {
-            this.setState({
-                total_question: inform.data().total_question,
-                eventName: inform.data().eventName,
-                questions_list: inform.data().questions_list,
-                id: inform.id
+        await db.collection("events")
+            .where("secret_code", "==", code).onSnapshot(snapshop => {
+                snapshop.docs.map((inform) => {
+                    this.setState({
+                        total_question: inform.data().total_question,
+                        eventName: inform.data().eventName,
+                        questions_list: inform.data().questions_list,
+                        id: inform.id
+                    })
+                })
             })
-        })
     }
 
     componentDidMount() {

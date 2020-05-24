@@ -72,7 +72,7 @@ class Landing extends React.Component {
                             <label for="eventCode" class="sr-only">Room code</label>
                             <input type="text" class="form-control" name="code" id="eventCode" placeholder="Room code" onChange={this.onChange}/>
                         </div>
-                        <div className="col-4">
+                        <div className="col-4 col-lg-2">
                             <button type="submit" class="btn btn-primary mb-2">Enter room</button>
                         </div>
                     </form>

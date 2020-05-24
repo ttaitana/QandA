@@ -83,21 +83,17 @@ class MainApp extends React.Component {
 
     async doLove(e){
         const {id} = this.state
-        let base_question_list = this.state.questions_list
-        const ids = e.target.attributes.getNamedItem('que_id').value
+        let base_question_list = this.state.questions_list       
+        const ids = e.target.attributes.getNamedItem('id').value
         let is_clicked = e.target.attributes.getNamedItem('is_clicked').value
-        let target_q = base_question_list.find(x => x.id == ids)
-        let index = base_question_list.findIndex(x => x.id == ids)
-
+        let target_q = base_question_list.find(x => x.id == ids.slice(5))
+        let index = base_question_list.findIndex(x => x.id == ids.slice(5))
+        console.log(target_q);
+        
 
         if (is_clicked == 'false') {
-            e.target.className = 'fa fa-heart h-active'
-            e.target.attributes.getNamedItem('is_clicked').value = "true"
             target_q.loves++;
-
         } else {
-            e.target.className = 'fa fa-heart-o'
-            e.target.attributes.getNamedItem('is_clicked').value = "false"
             target_q.loves--;
         }
         base_question_list[index] = target_q
@@ -111,6 +107,16 @@ class MainApp extends React.Component {
         this.setState({
             questions_list: base_question_list
         })
+        
+        let target_heart = document.querySelector(`#${ids}`)
+        if (is_clicked == 'false') {
+            target_heart.className = 'fa fa-heart h-active'
+            target_heart.attributes.getNamedItem('is_clicked').value = "true"
+
+        } else {
+            target_heart.className = 'fa fa-heart-o'
+            target_heart.attributes.getNamedItem('is_clicked').value = "false"
+        }
 
     }
     async addQuestion(){
@@ -167,7 +173,7 @@ class MainApp extends React.Component {
                                     <div className='btn-group'>
                                         <span class="badge badge-warning badge-pill">{qes.loves}</span>
                                     &ensp; &ensp;
-                                    <i class="fa fa-heart-o" que_id={qes.id} is_clicked="false" onClick={e => this.doLove(e)} />
+                                    <i class="fa fa-heart-o" que_id={qes.id} id={"heart"+qes.id} is_clicked="false" onClick={e => this.doLove(e)} />
                                     </div>
 
                                 </li>
